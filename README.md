@@ -19,7 +19,8 @@ This application consumes the public API and reports all station statuses. The v
   ```
 * Initialize and install required Python packets in the virtual environment  
   ```shell
-  pipenv shell && pipenv update
+  pipenv shell
+  pipenv update
   ```
 
 ## Run application locally
@@ -28,5 +29,5 @@ This application consumes the public API and reports all station statuses. The v
 export FLASK_APP=ocu
 flask run
 ```
-Access the application in your browser using [localhost port 5000](http://120.0.0.1:5000/) as address
+Access the application in your browser: (http://127.0.0.1:5000/)
 
