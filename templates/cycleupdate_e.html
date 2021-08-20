@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>
+      OCU - Oslo CityCycle Update
+    </title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  </head>
+  <body>
+    <div class="fresnel-container fresnel-greaterThan-mobile ">
+      <div class="ui inverted vertical center aligned segment" style="min-height: 110px">
+        <div class="ui text container"><h1 class="ui inverted header" style="font-size: 4em; font-weight: normal; margin-bottom: 0px; margin-top: 1em;">Oslo City Cycles</h1>
+          <h2 class="ui inverted header" style="font-size: 1.7em; font-weight: normal; margin-top: 1.5em;">Stations and status - {{ now }}</h2>
+        </div>
+      </div>
+      <div class="ui vertical center aligned segment">
+        <i class="ui huge exclamation icon"></i>
+        
+        <p class="ui huge error message">{{ error_message.ERROR }}<br/>
+          We'll continue to try to fetch the status information.
+        </p>
+      </div>
+    </div>
+  </body>
+<script>
+  $(window).ready( function() {
+    var time = 10
+    setInterval( function() {
+      time--;
+      $('#time').html(time);
+      if (time === 0) {
+        location.reload();
+      }    
+    }, 1000 );
+  });
+</script>
+</html>

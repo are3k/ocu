@@ -9,45 +9,71 @@
   </head>
   <body>
     <div class="fresnel-container fresnel-greaterThan-mobile ">
-      <div class="ui inverted vertical center aligned segment" style="min-height: 150px">
-        <div class="ui text container"><h1 class="ui inverted header" style="font-size: 4em; font-weight: normal; margin-bottom: 0px; margin-top: 3em;">Oslo City Cycles</h1>
-          <h2 class="ui inverted header" style="font-size: 1.7em; font-weight: normal; margin-top: 1.5em;">Stations and status</h2>
+      <div class="ui inverted vertical center aligned segment" style="min-height: 110px">
+        <div class="ui text container"><h1 class="ui inverted header" style="font-size: 4em; font-weight: normal; margin-bottom: 0px; margin-top: 1em;">Oslo City Cycles</h1>
+          <h2 class="ui inverted header" style="font-size: 1.7em; font-weight: normal; margin-top: 1.5em;">Stations and status - {{ now }}</h2>
         </div>
       </div>
-      <table class="ui striped table">
-        <thead>
+      <div class="ui container">
+        <table class="ui striped table">
+          <thead>
+            <tr>
+              <th>
+                Station name
+              </th>
+              <th>
+                Address
+              </th>
+              <th>
+                # bikes available
+              </th>
+              <th>
+                # free docks
+              </th>
+            </tr>
+          </thead>
+          {% for station in station_status %}
           <tr>
-            <th>
-              Station name
-            </th>
-            <th>
-              Address
-            </th>
-            <th>
-              # bikes available
-            </th>
-            <th>
-              # free docks
-            </th>
+            <td>
+              <a href="https://maps.google.com?q={{ station.latitude }},{{ station.longitude }}" target="_blank" rel="noopener">{{ station.name }}</a>
+            </td>
+            <td>
+              {{ station.address }}
+            </td>
+            {% if station.bikes_available > 3 %}
+              <td class="positive" align="center"><i class="ui large green bicycle icon"></i>
+            {% elif station.bikes_available > 0 %}
+              <td align="center"><i class="ui large orange bicycle icon"></i>
+            {% else %}
+              <td class="negative" align="center"><i class="ui large red bicycle icon"></i>
+            {% endif %}
+              <strong>{{ station.bikes_available }}</strong>
+            </td>
+            {% if station.docks_available > 3 %}
+              <td class="positive" align="center"><i class="ui large green key icon"></i>
+            {% elif station.docks_available > 0 %}
+              <td align="center"><i class="ui large orange key icon"></i>
+            {% else %}
+              <td class="negative" align="center"><i class="ui large red key icon"></i>
+            {% endif %}
+              <strong>{{ station.docks_available }}</strong>
+            </td>
           </tr>
-        </thead>
-        {% for station in station_status %}
-        <tr>
-          <td>
-            <a href="https://maps.google.com?q={{ station[2] }},{{ station[3] }}" target="_blank" rel="noopener">{{ station[0] }}</a>
-          </td>
-          <td>
-            {{ station[1] }}
-          </td>
-          <td align="center">
-            {{ station[5] }}
-          </td>
-          <td align="center">
-            {{ station[6] }}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+          {% endfor %}
+        </table>
+      </div>
     </div>
   </body>
+<script>
+  $(window).ready( function() {
+    var time = 10
+    setInterval( function() {
+      time--;
+      $('#time').html(time);
+      if (time === 0) {
+        location.reload();
+      }    
+    }, 1000 );
+  });
+</script>
 </html>

@@ -2,8 +2,10 @@ from flask import Flask, render_template
 import requests
 import json
 from collections import defaultdict
+from datetime import date, datetime
+from time import strftime
 
-# Fetch data from API endpoint, return result as a json object
+# Fetch data from API endpoint, return result as a dictionary
 def get_data(endpoint):
   URL = 'https://gbfs.urbansharing.com/oslobysykkel.no/' + endpoint
   PARAMS = { 'headers':'Client-Identifier: are3k-codetest'}
@@ -25,13 +27,16 @@ def create_list():
   try: 
     stations_data = get_data('station_information.json')
   except:
-    return "ERROR: Cannot fetch station information. Try refreshing page"
+    error = {"ERROR":"Cannot fetch station information."} 
+    return error
   try: 
     statuses_data = get_data('station_status.json')
   except:
-    return "ERROR: Cannot fetch station status. Try refreshing page"
+    error = {"ERROR":"Cannot fetch station status."} 
+    return error
   
-  # create dictionaries from both datatypes, using station_id as common key
+  # create dictionaries from both datatypes, using station_id 
+  # as common key
   for station in stations_data["data"]["stations"]:
     stations[station["station_id"]] = station
   
@@ -41,26 +46,52 @@ def create_list():
   # create list containing only data to display
   for station in stations:
     if station in statuses:
-      this_station_status = [
-        stations[station]["name"],
-        stations[station]["address"],
-        stations[station]["lat"],
-        stations[station]["lon"],
-        stations[station]["capacity"],
-        statuses[station]["num_bikes_available"],
-        statuses[station]["num_docks_available"],
-        statuses[station]["is_installed"],
-        statuses[station]["is_renting"],
-        statuses[station]["is_returning"],
-      ]
+      # if a station is not in use, don't list it
+      if not statuses[station]["is_installed"]:
+        break
+      
+      # if a station is closed for renting, set available bikes to zero
+      if not statuses[station]["is_renting"]:
+        free_bikes = 0
+      else:
+        free_bikes = statuses[station]["num_bikes_available"]
+      
+      # if a station is closed for returning, 
+      # set available docks to zero
+      if not statuses[station]["is_renting"]:
+        free_docks = 0
+      else:
+        free_docks = statuses[station]["num_docks_available"]
+
+      this_station_status = {
+        "name":stations[station]["name"],
+        "address":stations[station]["address"],
+        "latitude":stations[station]["lat"],
+        "longitude":stations[station]["lon"],
+        "capacity":stations[station]["capacity"],
+        "bikes_available":free_bikes,
+        "docks_available":free_docks,
+        "is_installed":statuses[station]["is_installed"],
+        }
     station_status.append(this_station_status)
-  # return list sorted by first column in station list
-  station_status.sort()
+  
+  # return list sorted by station name
+  station_status.sort(key=lambda x: x['name'], reverse=False)
   return station_status
   
 app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
+  # create the combined list of station and status data
   station_status = create_list()
-  return render_template('cycleupdate.html', station_status=station_status)
+
+  # set and format a time to display when status was fetched
+  now = datetime.now()
+  now = now.strftime("%b %d %Y %H:%M:%S")
+
+  # render the web page
+  if len(station_status) > 1:
+    return render_template('cycleupdate.html', station_status=station_status, now=now)
+  else:
+    return render_template('cycleupdate_e.html', error_message=station_status, now=now)
