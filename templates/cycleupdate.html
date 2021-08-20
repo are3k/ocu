@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>
+      OCU - Oslo CityCycle Update
+    </title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  </head>
+  <body>
+    <div class="fresnel-container fresnel-greaterThan-mobile ">
+      <div class="ui inverted vertical center aligned segment" style="min-height: 150px">
+        <div class="ui text container"><h1 class="ui inverted header" style="font-size: 4em; font-weight: normal; margin-bottom: 0px; margin-top: 3em;">Oslo City Cycles</h1>
+          <h2 class="ui inverted header" style="font-size: 1.7em; font-weight: normal; margin-top: 1.5em;">Stations and status</h2>
+        </div>
+      </div>
+      <table class="ui striped table">
+        <thead>
+          <tr>
+            <th>
+              Station name
+            </th>
+            <th>
+              Address
+            </th>
+            <th>
+              # bikes available
+            </th>
+            <th>
+              # free docks
+            </th>
+          </tr>
+        </thead>
+        {% for station in station_status %}
+        <tr>
+          <td>
+            <a href="https://maps.google.com?q={{ station[2] }},{{ station[3] }}" target="_blank" rel="noopener">{{ station[0] }}</a>
+          </td>
+          <td>
+            {{ station[1] }}
+          </td>
+          <td align="center">
+            {{ station[5] }}
+          </td>
+          <td align="center">
+            {{ station[6] }}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>
